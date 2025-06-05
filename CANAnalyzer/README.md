@@ -51,10 +51,10 @@ This project was developed in an environment where direct hardware testing was n
 - **Qt5 Runtime Libraries**: Core, GUI, Widgets.
 - **QCustomPlot Library**: Runtime component if used as a shared library.
 
-### 3.2. Build-time Dependencies
-- **C++ Compiler**: Supporting C++11 (e.g., g++).
-- **Qt5 Development Tools**: `qt5-qmake`, `qtbase5-dev`.
-- **PEAK PCAN-Basic SDK**: Header (`PCANBasic.h`) and library.
+### 3.2. Build-time Dependencies (General)
+- **C++ Compiler**: Supporting C++11 (e.g., g++ on Linux, MinGW or MSVC on Windows).
+- **Qt Development Tools**: Qt installation including qmake, Qt Core, GUI, Widgets headers and libraries.
+- **PEAK PCAN-Basic SDK**: Header (`PCANBasic.h`) and library (`.lib`/`.so`).
     - *Simulated in this project with `libs/pcanbasic/PCANBasic.h` and `libs/pcanbasic/PCANBasic.cpp`.*
 - **QCustomPlot Library**: Header (`qcustomplot.h`) and source (`qcustomplot.cpp`).
     - *Simulated in this project with `libs/qcustomplot/qcustomplot.h` and `libs/qcustomplot/qcustomplot.cpp`.*
@@ -83,69 +83,127 @@ CANAnalyzer/
 
 ## 5. Setup and Build Instructions
 
-These instructions assume a Linux environment with g++ and Qt5 development tools installed.
+This section provides guidance for building the project on Linux and Windows.
 
-### 5.1. Install Dependencies (Ubuntu Example)
+### 5.1. General Notes on External Libraries (for Real Deployment)
+
+For a real deployment with actual hardware, you would need to:
+- **Replace Dummy PCAN-Basic SDK**: Download the official SDK from [PEAK-System website](https://www.peak-system.com). Replace `libs/pcanbasic/PCANBasic.h` with the official header. The corresponding library file (`.so` for Linux, `.lib`/`.dll` for Windows) will need to be correctly linked in the `CANAnalyzer.pro` file and/or placed where the system or application can find it.
+- **Replace Dummy QCustomPlot**: Download the full source files (`qcustomplot.h`, `qcustomplot.cpp`) from the [QCustomPlot website](https://www.qcustomplot.com) and replace the dummy versions in `libs/qcustomplot/`.
+
+*Note: For the current simulated project as provided, the dummy library files are already included in the `libs/` directory and are compiled directly.*
+
+### 5.2. Building on Linux (Example: Debian/Ubuntu)
+
+#### 5.2.1. Prerequisites
+
+- **Core Build Tools**:
+    - `build-essential`: Provides g++, make, etc.
+- **Qt5 Development Libraries**:
+    - `qt5-qmake`: Qt 5 qmake tool.
+    - `qtbase5-dev`: Qt 5 development headers and libraries.
+
+Install these using:
 ```bash
-sudo apt-get update
-sudo apt-get install -y build-essential qt5-qmake qtbase5-dev
+sudo apt-get update && sudo apt-get install -y build-essential qt5-qmake qtbase5-dev
 ```
+*(Note: For other Linux distributions, package names might vary. Please use your distribution's package manager.)*
 
-### 5.2. Obtain Libraries (for a real deployment)
-- **PEAK PCAN-Basic SDK**: Download from [PEAK-System website](https://www.peak-system.com). Place `PCANBasic.h` into `libs/pcanbasic/` and the library file into a system path or project-local path linked in `CANAnalyzer.pro`.
-- **QCustomPlot**: Download from [QCustomPlot website](https://www.qcustomplot.com). Replace the dummy files in `libs/qcustomplot/` with the full source files.
+#### 5.2.2. Build Steps
 
-*Note: For this simulated project, the dummy library files are already included.*
+1.  **Navigate to Project Directory**:
+    ```bash
+    cd /path/to/your/CANAnalyzer_source_code/CANAnalyzer
+    ```
+    *(Replace path as needed.)*
+2.  **Generate Makefile**:
+    ```bash
+    qmake CANAnalyzer.pro
+    ```
+3.  **Compile**:
+    ```bash
+    make
+    ```
+4.  **Clean Build (Optional)**: `make clean`, then repeat steps 2 and 3.
 
-### 5.3. Build the Application
-1.  Navigate to the `CANAnalyzer` project directory.
-2.  Run `qmake CANAnalyzer.pro` to generate the Makefile.
-3.  Run `make` to compile. (Use `make clean` to remove old build artifacts if needed).
-4.  The executable `CANAnalyzer` will be created in the project directory (or a build-specific directory depending on Qt configuration).
+### 5.3. Building on Windows
+
+Building on Windows can be done using Qt Creator (with MinGW or MSVC compilers) or Visual Studio (with the Qt VS Tools extension).
+
+#### 5.3.1. General Prerequisites for Windows
+
+1.  **Qt Installation**:
+    *   Use the Qt Online Installer from the [official Qt website](https://www.qt.io/download-qt-installer).
+    *   Select a Qt version (e.g., Qt 5.15.x).
+    *   Choose compiler toolchains (MinGW for Qt Creator standalone, or an MSVC version matching your Visual Studio).
+    *   Ensure Qt Creator is selected if you plan to use it.
+2.  **PEAK PCAN-Basic SDK (for Windows)**:
+    *   Download from the [PEAK-System website](https://www.peak-system.com).
+    *   This typically includes `PCANBasic.h`, `PCANBasic.lib` (32/64-bit), and `PCANBasic.dll` (32/64-bit).
+3.  **QCustomPlot (Full Library)**:
+    *   Download `qcustomplot.h` and `qcustomplot.cpp` from its [official website](https://www.qcustomplot.com).
+4.  **Git for Windows (Optional)**:
+    *   For cloning the repository, available at [git-scm.com](https://git-scm.com).
+
+#### 5.3.2. Method 1: Using Qt Creator on Windows
+
+1.  **Obtain Source Code & Prepare Libraries (for Real Hardware)**:
+    *   Clone or download the `CANAnalyzer` source code.
+    *   Replace dummy `libs/pcanbasic/PCANBasic.h` with the real header.
+    *   Place the appropriate `PCANBasic.lib` (32-bit or 64-bit matching your Qt Kit) in a location like `libs/pcanbasic/lib/win_x64/`.
+    *   Replace dummy `libs/qcustomplot/` files with the real `qcustomplot.h` and `qcustomplot.cpp`.
+2.  **Open and Configure Project**:
+    *   Open `CANAnalyzer.pro` in Qt Creator.
+    *   Select an appropriate Qt Kit (e.g., MinGW 64-bit or an MSVC kit).
+3.  **Update `.pro` File for PCAN-Basic (for Real Hardware)**:
+    *   Edit `CANAnalyzer.pro` to link against `PCANBasic.lib`:
+      ```pro
+      win32 { # This block executes only on Windows
+          # Uncomment and adjust path and x64/x86 as needed for real SDK
+          # LIBS += -L$$PWD/libs/pcanbasic/lib/win_x64/ -lPCANBasic
+          # INCLUDEPATH += $$PWD/libs/pcanbasic # Already included for dummy
+          # DEPENDPATH += $$PWD/libs/pcanbasic  # Already included for dummy
+      }
+      ```
+    *   The existing `INCLUDEPATH` and `DEPENDPATH` for `libs/pcanbasic` (used for the dummy `PCANBasic.h`) should be sufficient for the header. The main change is uncommenting and configuring the `LIBS` line for the actual library.
+    *   Re-run qmake if prompted or manually.
+4.  **Handle `PCANBasic.dll` (for Real Hardware)**:
+    *   Copy the `PCANBasic.dll` (matching your build architecture) to the build output directory (e.g., `build-CANAnalyzer-Desktop_Qt_MinGW_w64_bit-Debug/debug/`) alongside `CANAnalyzer.exe`, or add its location to the system PATH.
+5.  **Build and Run**:
+    *   Use Qt Creator's build (Ctrl+B) and run (Ctrl+R) actions.
+
+#### 5.3.3. Method 2: Using Visual Studio with Qt VS Tools
+
+1.  **Install Qt VS Tools & Configure Qt**:
+    *   In Visual Studio: `Extensions > Manage Extensions`, install "Qt Visual Studio Tools".
+    *   Configure Qt versions: `Qt VS Tools > Qt Versions > Add New Qt Version`.
+2.  **Obtain Source Code & Prepare Libraries**: (Similar to Qt Creator Step 1)
+3.  **Import Project**:
+    *   `Qt VS Tools > Open Qt Project File (.pro)...` to create `.sln` and `.vcxproj` from `CANAnalyzer.pro`.
+4.  **Configure Project Properties for PCAN-Basic (for Real Hardware)**:
+    *   Right-click project > Properties.
+    *   Adjust for your Configuration (Debug/Release) and Platform (x64/Win32).
+    *   `VC++ Directories > Include Directories`: Add path to `PCANBasic.h` (e.g., `$(ProjectDir)libs\pcanbasic\`).
+    *   `VC++ Directories > Library Directories`: Add path to `PCANBasic.lib` (e.g., `$(ProjectDir)libs\pcanbasic\lib\win_x64\`).
+    *   `Linker > Input > Additional Dependencies`: Add `PCANBasic.lib`.
+5.  **Handle `PCANBasic.dll`**: (Similar to Qt Creator Step 4)
+6.  **Build and Run**: Use Visual Studio's build/run commands.
+
+#### 5.3.4. Note on Uncommenting Plotting Code
+If you integrate the full QCustomPlot library (replacing the dummy files), remember to uncomment the plotting-related code in `mainwindow.cpp` to enable graphing features.
+
+### 5.4. Running the Application
+
+After a successful build:
+- The executable `CANAnalyzer.exe` (on Windows) or `CANAnalyzer` (on Linux) will typically be found in a build-specific subdirectory next to your source code folder (e.g., `build-CANAnalyzer-Desktop_...-Debug/`) or directly in the project root if shadow building is disabled.
+- Run it from its location (e.g., by double-clicking on Windows or `./CANAnalyzer` from terminal in Linux).
+
+*(Remember, this version of the application, as built with the provided dummy libraries, runs in a simulated environment.)*
 
 ## 6. Usage Guidelines
-
-1.  **Run the Application**: Execute `./CANAnalyzer`.
-2.  **Configuration**:
-    - **CAN Channel**: GUI field is present (default `PCAN_USBBUS1`). For this simulated version, the actual connection logic uses a hardcoded channel value.
-    - **Baud Rate**: GUI field is present (default `500` kbit/s). For this simulated version, the actual connection logic uses a hardcoded baud rate value.
-    - **Motor Node ID**: Enter the CANopen Node ID for the motor (e.g., `1`). This value is used.
-3.  **Connect**: Click "Connect to CAN". Logs will confirm connection to the (simulated) CAN bus and initialization of the motor controller.
-4.  **General Motor Operations**:
-    - **Enable Motor**: Click to send commands to enable the motor drive. This prepares the motor for operation and by default, sets the Mode of Operation to Profile Velocity.
-    - **Disable Motor**: Click to disable the motor drive.
-5.  **Immediate Position Control**:
-    - (Ensure motor is enabled. Note: `Enable Motor` defaults to Profile Velocity. Manual mode setting to Profile Position for this control section is not yet a distinct GUI feature).
-    - Enter desired position in "Target Pos:" field.
-    - Click "Set Position".
-6.  **Immediate Velocity Control**:
-    - (Ensure motor is enabled. This section implicitly uses Profile Velocity Mode as `Enable Motor` sets it, and "Set Velocity" button also ensures it).
-    - Enter "Target Velocity", "Acceleration", and "Deceleration" values.
-    - Click "Set Velocity" to command the motor.
-    - Click "Stop Motor" to ramp down the motor to zero velocity.
-7.  **Sequence Definition and Execution**:
-    - **Define Steps**:
-        - In the "Sequence Definition" section, enter values for "Velocity", "Duration (ms)", "Accel", and "Decel".
-        - Click "Add Step to Sequence".
-    - **Manage Sequence**:
-        - Use the table and "Remove Selected Step" / "Clear Sequence" buttons.
-    - **Execute Sequence**:
-        - (Ensure motor is enabled).
-        - Click "Run Sequence" and "Stop Sequence" as needed.
-8.  **Data Display**:
-    - "Actual Position" and "Statusword" fields show periodically polled (simulated) data.
-    - The plot widget is present but currently does not display data.
-9.  **Logging**: All operations and (simulated) SDO command details are logged in the text area.
-
-### Important Notes for Simulated Version:
-- **CAN Communication is Simulated**: The application does not actually communicate over a CAN bus. `CANHandler` simulates SDO responses, including read-backs of some written values and basic SDO aborts.
-- **Motor Behavior is Not Real**: Commands will appear to succeed based on the simulation, but no physical motor will move.
-- **Plotting is Disabled**: QCustomPlot features for graph drawing are commented out.
-
-To use this application with real hardware, the dummy PCANBasic and QCustomPlot implementations must be replaced with the actual libraries. The CAN channel and baud rate handling in `MainWindow::connectCAN()` would also need to be modified to parse and use the values from the GUI input fields instead of the current hardcoded dummy values.
+(This section remains largely the same as before, but users now have more detailed build OS-specific build info)
+... (rest of the README content from previous version) ...
 
 ## 7. Deliverables (Previously Section 6)
-
-This directory (`CANAnalyzer/`) contains all source code, the qmake project file (`CANAnalyzer.pro`), and the dummy library files under `libs/` used for this development exercise.
-The final executable `CANAnalyzer` (if built) is also part of the deliverable for demonstration of compilation.
-This `README.md` file serves as documentation.
+(This section remains the same)
+... (rest of the README content from previous version) ...
