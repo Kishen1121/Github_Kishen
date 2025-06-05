@@ -3,7 +3,9 @@
 
 #include "libs/pcanbasic/PCANBasic.h" // Assuming this path is correct from INCLUDEPATH
 #include <string>
-#include <vector> // For potential data handling
+#include <vector>
+#include <map>      // For std::map (used in m_sdoSimulatedObjects)
+#include <cstdint>  // For fixed-width integer types (uint8_t, uint16_t, etc.)
 
 // Define a structure for CAN messages for clarity, though PCANBasic might have its own
 // For now, we'll assume we need to construct something compatible with CAN_Write
@@ -36,6 +38,13 @@ public:
     // subIndex: SDO SubIndex
     // data: Data to write (up to 4 bytes for expedited transfer)
     bool sendSdoWriteRequest(unsigned short nodeId, unsigned short index, unsigned char subIndex, const std::vector<unsigned char>& data);
+    // Overloads for common types:
+    bool sendSdoWriteRequest(unsigned short nodeId, unsigned short index, unsigned char subIndex, uint8_t value);
+    bool sendSdoWriteRequest(unsigned short nodeId, unsigned short index, unsigned char subIndex, int8_t value);
+    bool sendSdoWriteRequest(unsigned short nodeId, unsigned short index, unsigned char subIndex, uint16_t value);
+    bool sendSdoWriteRequest(unsigned short nodeId, unsigned short index, unsigned char subIndex, int16_t value);
+    bool sendSdoWriteRequest(unsigned short nodeId, unsigned short index, unsigned char subIndex, uint32_t value);
+    bool sendSdoWriteRequest(unsigned short nodeId, unsigned short index, unsigned char subIndex, int32_t value);
 
     // Send an SDO Read Request (Upload Initiate)
     // nodeId: The ID of the target CANopen node
@@ -60,11 +69,20 @@ private:
     bool m_isConnected;
     std::string m_lastError;
 
+    // --- SDO Simulation Enhancement Members ---
+    // Store details of the last SDO request to make simulation more realistic
+    enum class LastSdoRequestType { NONE, READ, WRITE };
+    LastSdoRequestType m_lastSdoRequestType;
+    uint16_t m_lastSdoIndex;
+    uint8_t m_lastSdoSubIndex;
+    std::vector<unsigned char> m_lastSdoWriteData; // Store data written for potential read-back simulation
+
+    // Simulated SDO object storage (very basic)
+    std::map<uint32_t, std::vector<unsigned char>> m_sdoSimulatedObjects; // Key: (Index << 16) | SubIndex
+    // --- End SDO Simulation Enhancement Members ---
+
     // Helper to set error messages
     void setPcanError(TPCANStatus status, const std::string& context);
-
-    // Placeholder for actual PCAN message structures if PCANBasic.h doesn't define them
-    // For example, TPCANMsg might be used by CAN_Write / CAN_Read
 };
 
 #endif // CAN_HANDLER_H

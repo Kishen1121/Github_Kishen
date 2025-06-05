@@ -11,10 +11,24 @@
 #include <QPushButton>
 #include <QTextEdit> // For log messages
 #include <QTimer>
+#include <QTableWidget> // For QTableWidget
 
 #include "libs/qcustomplot/qcustomplot.h" // QCustomPlot header
 #include "can_handler.h"
 #include "motor_controller.h"
+
+// Define the structure for a single step in a motor control sequence
+struct MotorSequenceStep {
+    int32_t targetVelocity;
+    uint32_t durationMs;
+    uint32_t profileAcceleration; // Optional, can be set per step or globally
+    uint32_t profileDeceleration; // Optional, can be set per step or globally
+
+    // Default constructor for easy initialization if needed
+    MotorSequenceStep(int32_t vel = 0, uint32_t dur = 1000, uint32_t acc = 1000, uint32_t dec = 1000)
+        : targetVelocity(vel), durationMs(dur), profileAcceleration(acc), profileDeceleration(dec) {}
+};
+
 
 class MainWindow : public QMainWindow
 {
@@ -27,15 +41,27 @@ public:
 private slots:
     // CAN Connection Slots
     void connectCAN();
-    void disconnectCAN(); // Optional, if a disconnect button is added
+    void disconnectCAN();
 
     // Motor Control Slots
     void enableMotor();
     void disableMotor();
-    void setTargetPosition();
+    void setTargetPosition(); // This is for position mode, may need adjustment for velocity sequences
 
     // Polling/Update Slot
-    void updateMotorData(); // For QTimer
+    void updateMotorData();
+
+    // Sequence Control Slots
+    void startSequence();
+    void stopSequence();
+    void onSequenceTimerTimeout();
+
+    // Slots for new UI elements
+    void onSetImmediateVelocityClicked();
+    void onStopMotorClicked(); // For the new immediate stop button
+    void onAddStepClicked();
+    void onRemoveSelectedStepClicked();
+    void onClearSequenceClicked();
 
 private:
     void setupUI();
@@ -60,9 +86,21 @@ private:
     // Motor Control UI
     QPushButton *m_btnEnableMotor;
     QPushButton *m_btnDisableMotor;
-    QLabel *m_lblTargetPosition;
-    QLineEdit *m_txtTargetPosition;
-    QPushButton *m_btnSetTargetPosition;
+
+    // Immediate Position Control (existing elements, re-categorized for clarity)
+    QLabel *m_lblTargetPosition;      // For position mode
+    QLineEdit *m_txtTargetPosition;   // For position mode
+    QPushButton *m_btnSetTargetPosition; // For position mode
+
+    // Immediate Velocity Control UI
+    QLabel *m_lblImmediateVelocity;
+    QLineEdit *m_txtImmediateVelocity;
+    QLabel *m_lblImmediateAccel;
+    QLineEdit *m_txtImmediateAccel;
+    QLabel *m_lblImmediateDecel;
+    QLineEdit *m_txtImmediateDecel;
+    QPushButton *m_btnSetImmediateVelocity;
+    QPushButton *m_btnStopMotorImmediate;
 
     // Display UI
     QLabel *m_lblActualPosition;
@@ -73,11 +111,34 @@ private:
     // Plotting
     QCustomPlot *m_plot;
 
+    // Sequence Definition UI
+    QTableWidget *m_tblSequenceSteps;
+    QLabel *m_lblStepVelocity;
+    QLineEdit *m_txtStepVelocity;
+    QLabel *m_lblStepDuration;
+    QLineEdit *m_txtStepDuration;
+    QLabel *m_lblStepAccel;
+    QLineEdit *m_txtStepAccel;
+    QLabel *m_lblStepDecel;
+    QLineEdit *m_txtStepDecel;
+    QPushButton *m_btnAddStep;
+    QPushButton *m_btnRemoveStep;
+    QPushButton *m_btnClearSequence;
+
+    // Sequence Execution UI
+    QPushButton *m_btnStartSequence;
+    QPushButton *m_btnStopSequence;
+
     // Logging
     QTextEdit *m_logTextEdit;
 
-    // Timer for polling
+    // Timer for polling motor status
     QTimer *m_pollingTimer;
+
+    // Sequence related members
+    QList<MotorSequenceStep> m_sequenceSteps;
+    QTimer *m_sequenceTimer;
+    int m_currentSequenceStepIndex;
 
     // Backend Logic
     CANHandler m_canHandler; // Direct instance for simplicity
@@ -91,6 +152,10 @@ private:
     QVector<double> m_timeData;
     QVector<double> m_positionData;
     double m_plotTimeValue;
+
+    // Helper methods
+    void executeCurrentSequenceStep();
+    void updateSequenceTable(); // To refresh QTableWidget
 };
 
 #endif // MAINWINDOW_H

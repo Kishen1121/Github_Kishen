@@ -22,8 +22,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_MainWindow_t {
-    QByteArrayData data[8];
-    char stringdata0[96];
+    QByteArrayData data[16];
+    char stringdata0[263];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -39,12 +39,25 @@ QT_MOC_LITERAL(3, 23, 13), // "disconnectCAN"
 QT_MOC_LITERAL(4, 37, 11), // "enableMotor"
 QT_MOC_LITERAL(5, 49, 12), // "disableMotor"
 QT_MOC_LITERAL(6, 62, 17), // "setTargetPosition"
-QT_MOC_LITERAL(7, 80, 15) // "updateMotorData"
+QT_MOC_LITERAL(7, 80, 15), // "updateMotorData"
+QT_MOC_LITERAL(8, 96, 13), // "startSequence"
+QT_MOC_LITERAL(9, 110, 12), // "stopSequence"
+QT_MOC_LITERAL(10, 123, 22), // "onSequenceTimerTimeout"
+QT_MOC_LITERAL(11, 146, 29), // "onSetImmediateVelocityClicked"
+QT_MOC_LITERAL(12, 176, 18), // "onStopMotorClicked"
+QT_MOC_LITERAL(13, 195, 16), // "onAddStepClicked"
+QT_MOC_LITERAL(14, 212, 27), // "onRemoveSelectedStepClicked"
+QT_MOC_LITERAL(15, 240, 22) // "onClearSequenceClicked"
 
     },
     "MainWindow\0connectCAN\0\0disconnectCAN\0"
     "enableMotor\0disableMotor\0setTargetPosition\0"
-    "updateMotorData"
+    "updateMotorData\0startSequence\0"
+    "stopSequence\0onSequenceTimerTimeout\0"
+    "onSetImmediateVelocityClicked\0"
+    "onStopMotorClicked\0onAddStepClicked\0"
+    "onRemoveSelectedStepClicked\0"
+    "onClearSequenceClicked"
 };
 #undef QT_MOC_LITERAL
 
@@ -54,7 +67,7 @@ static const uint qt_meta_data_MainWindow[] = {
        8,       // revision
        0,       // classname
        0,    0, // classinfo
-       6,   14, // methods
+      14,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -62,14 +75,30 @@ static const uint qt_meta_data_MainWindow[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    0,   44,    2, 0x08 /* Private */,
-       3,    0,   45,    2, 0x08 /* Private */,
-       4,    0,   46,    2, 0x08 /* Private */,
-       5,    0,   47,    2, 0x08 /* Private */,
-       6,    0,   48,    2, 0x08 /* Private */,
-       7,    0,   49,    2, 0x08 /* Private */,
+       1,    0,   84,    2, 0x08 /* Private */,
+       3,    0,   85,    2, 0x08 /* Private */,
+       4,    0,   86,    2, 0x08 /* Private */,
+       5,    0,   87,    2, 0x08 /* Private */,
+       6,    0,   88,    2, 0x08 /* Private */,
+       7,    0,   89,    2, 0x08 /* Private */,
+       8,    0,   90,    2, 0x08 /* Private */,
+       9,    0,   91,    2, 0x08 /* Private */,
+      10,    0,   92,    2, 0x08 /* Private */,
+      11,    0,   93,    2, 0x08 /* Private */,
+      12,    0,   94,    2, 0x08 /* Private */,
+      13,    0,   95,    2, 0x08 /* Private */,
+      14,    0,   96,    2, 0x08 /* Private */,
+      15,    0,   97,    2, 0x08 /* Private */,
 
  // slots: parameters
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -92,6 +121,14 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 3: _t->disableMotor(); break;
         case 4: _t->setTargetPosition(); break;
         case 5: _t->updateMotorData(); break;
+        case 6: _t->startSequence(); break;
+        case 7: _t->stopSequence(); break;
+        case 8: _t->onSequenceTimerTimeout(); break;
+        case 9: _t->onSetImmediateVelocityClicked(); break;
+        case 10: _t->onStopMotorClicked(); break;
+        case 11: _t->onAddStepClicked(); break;
+        case 12: _t->onRemoveSelectedStepClicked(); break;
+        case 13: _t->onClearSequenceClicked(); break;
         default: ;
         }
     }
@@ -127,13 +164,13 @@ int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 6)
+        if (_id < 14)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 6;
+        _id -= 14;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 6)
+        if (_id < 14)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 6;
+        _id -= 14;
     }
     return _id;
 }

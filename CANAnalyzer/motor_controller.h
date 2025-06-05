@@ -25,11 +25,24 @@ namespace MotorSdoObjects {
     const uint16_t ACTUAL_POSITION_INDEX = 0x6064;
     const uint8_t ACTUAL_POSITION_SUBINDEX = 0x00;
 
-    // Modes of Operation (Index 0x6060, SubIndex 0x00)
+    // Modes of Operation (Index 0x6060, SubIndex 0x00, int8_t or uint8_t)
     const uint16_t MODES_OF_OPERATION_INDEX = 0x6060;
     const uint8_t MODES_OF_OPERATION_SUBINDEX = 0x00;
-    // Example modes: 1 = Profile Position Mode, 3 = Profile Velocity Mode, etc.
     const int8_t MODE_PROFILE_POSITION = 1;
+    const int8_t MODE_PROFILE_VELOCITY = 3;
+    // Add other modes as needed, e.g., Homing, Cyclic Sync Position, etc.
+
+    // Target Velocity (Index 0x60FF, SubIndex 0x00, int32_t) - Profile Velocity Mode
+    const uint16_t TARGET_VELOCITY_INDEX = 0x60FF;
+    const uint8_t TARGET_VELOCITY_SUBINDEX = 0x00;
+
+    // Profile Acceleration (Index 0x6083, SubIndex 0x00, uint32_t)
+    const uint16_t PROFILE_ACCELERATION_INDEX = 0x6083;
+    const uint8_t PROFILE_ACCELERATION_SUBINDEX = 0x00;
+
+    // Profile Deceleration (Index 0x6084, SubIndex 0x00, uint32_t)
+    const uint16_t PROFILE_DECELERATION_INDEX = 0x6084;
+    const uint8_t PROFILE_DECELERATION_SUBINDEX = 0x00;
 }
 
 class MotorController
@@ -61,6 +74,18 @@ public:
     // Read the statusword
     bool readStatusword(uint16_t& statusword);
 
+    // Set operation mode (renaming from previous setModeOfOperation for clarity if needed or use as new)
+    bool setOperationMode(uint8_t mode);
+
+    // Set target velocity (for Profile Velocity mode)
+    bool setTargetVelocity(int32_t velocity);
+
+    // Set profile acceleration
+    bool setProfileAcceleration(uint32_t acceleration);
+
+    // Set profile deceleration
+    bool setProfileDeceleration(uint32_t deceleration);
+
 
     // --- Polling Logic ---
     // For simplicity, a manual poll function. A real app might use QTimer.
@@ -72,6 +97,7 @@ private:
     CANHandler& m_canHandler;
     uint16_t m_nodeId; // CANopen Node ID of the motor drive
     std::string m_lastError;
+    void logMessage(const std::string& message); // Declaration for internal logging
 
     // Helper to send SDO write messages
     bool writeSDO(uint16_t index, uint8_t subIndex, const std::vector<unsigned char>& data);
