@@ -1,6 +1,9 @@
 #ifndef CAN_HANDLER_H
 #define CAN_HANDLER_H
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
 #include "libs/pcanbasic/PCANBasic.h" // Assuming this path is correct from INCLUDEPATH
 #include <string>
 #include <vector>
