@@ -4,12 +4,20 @@ CONFIG += c++11
 TARGET = CANAnalyzer
 TEMPLATE = app
 
-SOURCES += main.cpp \
-           libs/qcustomplot/qcustomplot.cpp \
-           libs/pcanbasic/PCANBasic.cpp \
-           can_handler.cpp \
-           motor_controller.cpp \
-           mainwindow.cpp
+SOURCES = main.cpp \
+          libs/qcustomplot/qcustomplot.cpp \
+          can_handler.cpp \
+          motor_controller.cpp \
+          mainwindow.cpp
+
+# Conditionally compile the dummy PCANBasic.cpp for non-Windows platforms
+# On Windows, we expect to link against a pre-compiled PCANBasic.lib
+!win32 {
+    SOURCES += libs/pcanbasic/PCANBasic.cpp
+    message("Including dummy PCANBasic.cpp for non-Windows build")
+} else {
+    message("Excluding dummy PCANBasic.cpp for Windows build, expecting linked library")
+}
 
 HEADERS += libs/pcanbasic/PCANBasic.h \
            libs/qcustomplot/qcustomplot.h \

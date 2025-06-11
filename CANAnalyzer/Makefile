@@ -54,17 +54,17 @@ OBJECTS_DIR   = ./
 
 SOURCES       = main.cpp \
 		libs/qcustomplot/qcustomplot.cpp \
-		libs/pcanbasic/PCANBasic.cpp \
 		can_handler.cpp \
 		motor_controller.cpp \
-		mainwindow.cpp moc_qcustomplot.cpp \
+		mainwindow.cpp \
+		libs/pcanbasic/PCANBasic.cpp moc_qcustomplot.cpp \
 		moc_mainwindow.cpp
 OBJECTS       = main.o \
 		qcustomplot.o \
-		PCANBasic.o \
 		can_handler.o \
 		motor_controller.o \
 		mainwindow.o \
+		PCANBasic.o \
 		moc_qcustomplot.o \
 		moc_mainwindow.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
@@ -150,10 +150,10 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		motor_controller.h \
 		mainwindow.h main.cpp \
 		libs/qcustomplot/qcustomplot.cpp \
-		libs/pcanbasic/PCANBasic.cpp \
 		can_handler.cpp \
 		motor_controller.cpp \
-		mainwindow.cpp
+		mainwindow.cpp \
+		libs/pcanbasic/PCANBasic.cpp
 QMAKE_TARGET  = CANAnalyzer
 DESTDIR       =
 TARGET        = CANAnalyzer
@@ -338,7 +338,7 @@ distdir: FORCE
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents libs/pcanbasic/PCANBasic.h libs/qcustomplot/qcustomplot.h can_handler.h motor_controller.h mainwindow.h $(DISTDIR)/
-	$(COPY_FILE) --parents main.cpp libs/qcustomplot/qcustomplot.cpp libs/pcanbasic/PCANBasic.cpp can_handler.cpp motor_controller.cpp mainwindow.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents main.cpp libs/qcustomplot/qcustomplot.cpp can_handler.cpp motor_controller.cpp mainwindow.cpp libs/pcanbasic/PCANBasic.cpp $(DISTDIR)/
 
 
 clean: compiler_clean
@@ -413,9 +413,6 @@ main.o: main.cpp mainwindow.h \
 qcustomplot.o: libs/qcustomplot/qcustomplot.cpp libs/qcustomplot/qcustomplot.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qcustomplot.o libs/qcustomplot/qcustomplot.cpp
 
-PCANBasic.o: libs/pcanbasic/PCANBasic.cpp libs/pcanbasic/PCANBasic.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PCANBasic.o libs/pcanbasic/PCANBasic.cpp
-
 can_handler.o: can_handler.cpp can_handler.h \
 		libs/pcanbasic/PCANBasic.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o can_handler.o can_handler.cpp
@@ -431,6 +428,9 @@ mainwindow.o: mainwindow.cpp mainwindow.h \
 		libs/pcanbasic/PCANBasic.h \
 		motor_controller.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o mainwindow.cpp
+
+PCANBasic.o: libs/pcanbasic/PCANBasic.cpp libs/pcanbasic/PCANBasic.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PCANBasic.o libs/pcanbasic/PCANBasic.cpp
 
 moc_qcustomplot.o: moc_qcustomplot.cpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_qcustomplot.o moc_qcustomplot.cpp
